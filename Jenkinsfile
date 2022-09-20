@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    ISO_FILENAME = 'ubuntu-16.04.3-server-amd64'  
+    ISO_FILENAME = 'ubuntu-16.04.7-desktop-amd64'  
   }
   parameters {
     string(name: 'LOCALE', defaultValue: 'en_US', description: 'Locale')
