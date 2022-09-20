@@ -1,0 +1,128 @@
+d-i keyboard-configuration/layoutcode string us
+d-i keyboard-configuration/variantcode string
+d-i debian-installer/locale string LOCALE
+d-i console-setup/ask_detect boolean false
+d-i keyboard-configuration/xkb-keymap select us
+d-i console-keymaps-at/keymap select us
+
+### Network configuration
+d-i netcfg/choose_interface select NETIFACE
+d-i netcfg/get_hostname string HOSTNAME
+d-i netcfg/get_domain string DOMAIN
+d-i netcfg/wireless_wep string
+
+### Mirror settings
+d-i mirror/country string manual
+d-i mirror/http/hostname string archive.ubuntu.com
+d-i mirror/http/directory string /ubuntu
+d-i mirror/http/proxy string
+
+# Suite to install.
+d-i mirror/suite string xenial
+
+### Account setup
+d-i passwd/root-login boolean false
+
+# To create a normal user account.
+d-i passwd/user-fullname string FULLNAME
+d-i passwd/username string USERNAME
+d-i passwd/user-password-crypted password PASSWORD_CRYPT
+
+d-i user-setup/encrypt-home boolean false
+d-i clock-setup/utc boolean true
+d-i time/zone string TIMEZONE
+d-i clock-setup/ntp boolean true
+
+### Partitioning
+d-i partman-auto/disk string ROOT_DEV
+d-i partman-auto/method string lvm
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+
+# For LVM partitioning, you can select how much of the volume group to use
+# for logical volumes.
+# d-i partman-auto-lvm/guided_size string max
+# d-i partman-auto/choose_recipe select atomic
+
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+# This makes partman automatically partition without confirmation.
+d-i partman-md/confirm boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+d-i partman-auto/expert_recipe string 			\
+boot-root :: 				\
+1 1 1 free 					\
+	$gptonly{ }				\
+	$primary{ }				\
+	$lvmignore{ }			\
+	$bios_boot{ }			\
+	method{ biosgrub } 		\
+.							\
+256 10 256 fat32			\
+	$gptonly{ }				\
+	$primary{ }				\
+	$lvmignore{ }			\
+	method{ efi }			\
+	format{ }				\
+.							\
+500 10000 1000000 ext4		\
+	$defaultignore{ }		\
+	$lvmok{ }				\
+	method{ format }		\
+	format{ }				\
+	use_filesystem{ }		\
+	filesystem{ ext4 }		\
+	mountpoint{ / }			\
+	lv_name{ root } 		\
+.							\
+64 512 150% linux-swap		\
+	$defaultignore{ }		\
+	$lvmok{ }				\
+	method{ swap }			\
+	format{ }				\
+	lv_name{ swap } 		\
+.
+
+d-i partman/mount_style select uuid
+ 
+
+d-i base-installer/install-recommends boolean true
+d-i apt-setup/restricted boolean true
+d-i apt-setup/universe boolean true
+d-i apt-setup/backports boolean true
+d-i apt-setup/use_mirror boolean false
+d-i apt-setup/services-select multiselect security, updates
+d-i apt-setup/security_host string security.ubuntu.com
+d-i apt-setup/security_path string /ubuntu
+
+tasksel tasksel/first multiselect none
+d-i pkgsel/include string openssh-server python
+d-i pkgsel/upgrade select full-upgrade
+d-i pkgsel/update-policy select unattended-upgrades
+
+
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev  string default
+
+d-i partman-efi/non_efi_system boolean true
+
+# Avoid that last message about the install being complete.
+d-i finish-install/reboot_in_progress note
+
+d-i preseed/late_command string \
+  cp /userkey.pub /target/userkey.pub; \
+  in-target sh -c 'sed -i "s/^#PermitRootLogin.*\$/PermitRootLogin prohibit-password/g" /etc/ssh/sshd_config'; \
+  in-target sh -c 'mkdir -p --mode=0700 /home/USERNAME/.ssh && cat /userkey.pub > /home/USERNAME/.ssh/authorized_keys && chmod 0600 /home/USERNAME/.ssh/authorized_keys'; \
+  in-target sh -c 'chown -R USERNAME:USERNAME /home/USERNAME/.ssh';
+  rm -r /target/userkey.pub;
+
