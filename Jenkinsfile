@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    ISO_FILENAME = 'ubuntu-18.04.6-desktop-amd64'  
+    ISO_FILENAME = 'ubuntu-22.04.1-desktop-amd64'  
   }
   parameters {
     string(name: 'LOCALE', defaultValue: 'en_US', description: 'Locale')
@@ -26,7 +26,7 @@ pipeline {
         
       }
       steps {
-        sh "curl -O http://releases.ubuntu.com/18.04/${ISO_FILENAME}.iso"
+        sh "curl -O https://releases.ubuntu.com/22.04/${ISO_FILENAME}.iso"
       }
     }
     stage('Mount ISO') {
