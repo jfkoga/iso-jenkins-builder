@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    ISO_FILENAME = 'ubuntu-16.04.7-desktop-amd64'  
+    ISO_FILENAME = 'ubuntu-16.04.3-server-amd64'  
   }
   parameters {
     string(name: 'LOCALE', defaultValue: 'en_US', description: 'Locale')
@@ -13,10 +13,9 @@ pipeline {
     string(name: 'DOMAIN', defaultValue: 'unassigned-domain', description: 'Domain')
     string(name: 'TIMEZONE', defaultValue: 'US/Eastern', description: 'Timezone')
     string(name: 'ROOT_DEV', defaultValue: '/dev/sda', description: 'System disk')
-    string(name: 'ARTIFACT_NAME', defaultValue: 'ubuntu-16.04.3-server-amd64_unattend.iso')
   }
   options {
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: ''))
+    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '3'))
   }
   stages {
     stage('Download ISO') {
@@ -67,10 +66,6 @@ pipeline {
         sh 'sed -i "s#TIMEZONE#${TIMEZONE}#g" ./iso/preseed/server.seed'
         sh '''        	
 			MD5_SUM=$(md5sum ./iso/preseed/server.seed)
-      sed -i '/menuentry "Install Ubuntu Server"/imenuentry "Autoinstall" {\\n\\
-        set gfxpayload=keep\\n\\
-        linux /install/vmlinuz gfxpayload=800x600x16,800x600 hostname=${HOSTNAME} --- auto=true preseed/file=/cdrom/preseed/server.seed preseed/file/checksum=$MD5_SUM quiet\\n\\
-        initrd /install/initrd.gz\\n\\}' ./iso/boot/grub/grub.cfg
 			sed -i "/label install/ilabel autoinstall\\n\\
 			  menu label ^Autoinstall Ubuntu 16.04 Server\\n\\
 			  kernel /install/vmlinuz\\n\\
@@ -79,13 +74,12 @@ pipeline {
       }
     }
     stage('Make ISO') {
-      steps {
-        sh 'dd if=${ISO_FILENAME}.iso bs=512 count=1 of=./iso/isolinux/isohdpfx.bin'              
-        sh 'xorriso -as mkisofs -isohybrid-mbr ./iso/isolinux/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -o ${ARTIFACT_NAME} ./iso'
+      steps {      
+        sh 'mkisofs -D -r -V "Unattended Ubuntu Server 16.04" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${ISO_FILENAME}_unattend.iso ./iso'
       }
       post {
         success {          
-          archiveArtifacts artifacts: "${ARTIFACT_NAME}", fingerprint: true
+          archiveArtifacts artifacts: "${ISO_FILENAME}_unattend.iso", fingerprint: true
         }
       }
     }   
