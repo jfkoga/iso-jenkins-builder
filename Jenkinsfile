@@ -26,7 +26,7 @@ pipeline {
         
       }
       steps {
-        sh "curl -O http://releases.ubuntu.com/16.04/${ISO_FILENAME}.iso"
+        sh "curl -O http://releases.ubuntu.com/22.04/${ISO_FILENAME}.iso"
       }
     }
     stage('Mount ISO') {
