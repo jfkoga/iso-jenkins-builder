@@ -43,11 +43,9 @@ pipeline {
 	  steps {
         sh '''
         ISO_FILENAME = 'ubuntu-22.04.1-desktop-amd64'  
-        SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
-        SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}')
-  
-
-        dd if="$orig" bs=512 skip="$SKIP" count="$SIZE" of="$efi"
+        SKIP=$(/sbin/fdisk -l "ubuntu-22.04.1-desktop-amd6.iso" | fgrep '.iso2 ' | awk '{print $2}')
+        SIZE=$(/sbin/fdisk -l "ubuntu-22.04.1-desktop-amd6.iso" | fgrep '.iso2 ' | awk '{print $4}'
+        dd if="ubuntu-22.04.1-desktop-amd6.iso" bs=512 skip="$SKIP" count="$SIZE" of="$efi"
         '''
 	  }    
     }
