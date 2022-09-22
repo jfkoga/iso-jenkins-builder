@@ -4,7 +4,7 @@ pipeline {
     ISO_FILENAME = 'ubuntu-22.04.1-desktop-amd64'  
   }
   parameters {
-    string(name: 'LOCALE', defaultValue: 'en_US', description: 'Locale')
+    string(name: 'LOCALE', defaultValue: 'es_ES', description: 'Locale')
   	string(name: 'FULLNAME', defaultValue: 'Ubuntu', description: 'Full Name')
   	string(name: 'USERNAME', defaultValue: 'ubuntu', description: 'Username')
     string(name: 'PUBKEY', defaultValue: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCw73YVw5JKvNvATa7EAh/bQFDV41GKj2B2/bZ5QF+qJQXb08o1az0A8dsGbxlkkXPALxzmfWKcLxoDIOYD58kkPK/+eCbE+EDi/trpQ1cdltVvlC31cwfctlCOrdKboKjwqqUKsurfJY8zFlsYBras5IxdLSk/4VxOkC6O+/3+ptw+UAY5RGdAuwDppP60qi807t7ySPmtVx90I+I31rpzizzqfI/wkUutVonZKYn9A9nsF3Xkf2MQwtbA7OWfVv/0IkXdsTatQAFqkUPhO8ZOiMhCeb4E2juO/b0jCNxyieXfkxAkpONfLM0E+0HLvDsOjWE7mvcpuZ0hFDPFYk/d jenkins@jenkins', description: 'Public SSH key that will be added to authorized_keys for this user')
@@ -34,13 +34,21 @@ pipeline {
         sh '7z x ./${ISO_FILENAME}.iso -oiso'
       }
     }
-    stage('Update initrd') {
+    stage('Extract MBR partition image from the original ISO.') {
 	  steps {
-	    dir('initrd') {
-        sh 'echo "$PUBKEY" > ./userkey.pub'
-	      sh 'cat ../iso/install/initrd.gz | gzip -d > "./initrd"'
-	      sh 'echo "./userkey.pub" | fakeroot cpio -o -H newc -A -F "./initrd"'
-	      sh 'cat "./initrd" | gzip -9c > "../iso/install/initrd.gz"'	      
+	    dir('iso') {
+        sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
+	    }
+	  }    
+    }
+     stage('Extract EFI partition image from the original ISO.') {
+	  steps {
+	    dir('iso') {
+        sh '''
+        SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
+        SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}')
+        '''     
+        sh 'dd if="$orig" bs=512 skip="$SKIP" count="$SIZE" of="${ISO_FILENAME}.efi"'
 	    }
 	  }    
     }
