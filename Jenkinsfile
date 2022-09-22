@@ -35,11 +35,9 @@ pipeline {
       }
     }
     stage('Extract MBR partition image from the original ISO.') {
-	  steps {
-	    dir('iso') {
-        sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
-	    }
-	  }    
+      steps {
+          sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
+      }    
     }
      stage('Extract EFI partition image from the original ISO.') {
 	  steps {
