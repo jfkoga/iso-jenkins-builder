@@ -6,14 +6,14 @@ pipeline {
     
   }
   parameters {
-    string(name: 'LOCALE', defaultValue: 'es_ES', description: 'Locale')
-  	string(name: 'FULLNAME', defaultValue: 'Ubuntu', description: 'Full Name')
-  	string(name: 'USERNAME', defaultValue: 'ubuntu', description: 'Username')
+    string(name: 'LOCALE', defaultValue: 'ca_ES', description: 'Locale')
+  	string(name: 'FULLNAME', defaultValue: 'Linkat Desktop', description: 'Full Name')
+  	string(name: 'USERNAME', defaultValue: 'suport', description: 'Username')
     string(name: 'PUBKEY', defaultValue: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCw73YVw5JKvNvATa7EAh/bQFDV41GKj2B2/bZ5QF+qJQXb08o1az0A8dsGbxlkkXPALxzmfWKcLxoDIOYD58kkPK/+eCbE+EDi/trpQ1cdltVvlC31cwfctlCOrdKboKjwqqUKsurfJY8zFlsYBras5IxdLSk/4VxOkC6O+/3+ptw+UAY5RGdAuwDppP60qi807t7ySPmtVx90I+I31rpzizzqfI/wkUutVonZKYn9A9nsF3Xkf2MQwtbA7OWfVv/0IkXdsTatQAFqkUPhO8ZOiMhCeb4E2juO/b0jCNxyieXfkxAkpONfLM0E+0HLvDsOjWE7mvcpuZ0hFDPFYk/d jenkins@jenkins', description: 'Public SSH key that will be added to authorized_keys for this user')
     string(name: 'NETIFACE', defaultValue: 'auto', description: 'Default network interface')
-    string(name: 'HOSTNAME', defaultValue: 'unassigned-hostname', description: 'Hostname')
+    string(name: 'HOSTNAME', defaultValue: 'linkat-desktop', description: 'Hostname')
     string(name: 'DOMAIN', defaultValue: 'unassigned-domain', description: 'Domain')
-    string(name: 'TIMEZONE', defaultValue: 'US/Eastern', description: 'Timezone')
+    string(name: 'TIMEZONE', defaultValue: 'Europe/Barcelona', description: 'Timezone')
     string(name: 'ROOT_DEV', defaultValue: '/dev/sda', description: 'System disk')
   }
   options {
