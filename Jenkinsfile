@@ -35,15 +35,13 @@ pipeline {
       }
     }
     stage('Extract MBR partition image from the original ISO.') {
-	  steps {
-	    dir('iso') {
+	  steps { 
         sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
 	    }
 	  }    
     }
      stage('Extract EFI partition image from the original ISO.') {
 	  steps {
-	    dir('iso') {
         sh '''
         SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
         SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}')
