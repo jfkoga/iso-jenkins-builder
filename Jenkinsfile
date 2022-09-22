@@ -52,7 +52,7 @@ pipeline {
     }
     stage('Build ISO') {
       steps {      
-        sh '''xorriso -as mkisofs -V 'Linkat 22.04.1 LTS amd64' --grub2-mbr "${ISO_BASE}.mbr" -iso-level 3 --protective-msdos-label -partition_cyl_align off -partition_offset 16 --mbr-force-bootable -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b "${ISO_BASE}.efi" --interval:local_fs:7465120d-7473615d::'ubuntu-22.04.1-desktop-amd64.iso' -appended_part_as_gpt -c '/boot.catalog' -b 'iso/boot/grub/i386-pc/eltorito.img' -no-emul-boot -boot-load-size 4 -boot-info-table -e '--interval:appended_partition_2_start_1866280s_size_8496d:all::' -o "${ISO_LINKAT}.iso" /var/jenkins_home/workspace/iso-builder/newiso/'''
+        sh '''xorriso -as mkisofs -V 'Linkat 22.04.1 LTS amd64' --grub2-mbr "${ISO_BASE}.mbr" -iso-level 3 --protective-msdos-label -partition_cyl_align off -partition_offset 16 --mbr-force-bootable -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b "${ISO_BASE}.efi" -appended_part_as_gpt -c '/boot.catalog' -b 'iso/boot/grub/i386-pc/eltorito.img' -no-emul-boot -boot-load-size 4 -boot-info-table -e '--interval:appended_partition_2_start_1866280s_size_8496d:all::' -o "${ISO_LINKAT}.iso" /var/jenkins_home/workspace/iso-builder/newiso/'''
       }
       post {
         success {          
