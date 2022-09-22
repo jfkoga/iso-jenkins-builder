@@ -81,7 +81,7 @@ pipeline {
     }
     stage('Build ISO') {
       steps {      
-        sh 'xorriso -as mkisofs -r -V 'Linkat_2204_LTS_Desktop_EFIBIOS' -o /opt/ubnt/ubuntu-modif.iso --grub2-mbr /opt/ubnt/boot_hybrid.img  -iso-level 3 -partition_offset 16 --mbr-force-bootable -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b /opt/ubnt/efi.img -appended_part_as_gpt -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 -c '/boot.catalog' -b 'iso/boot/grub/i386-pc/eltorito.img' -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info -eltorito-alt-boot -e '--interval\\:appended_partition_2\\:\\:\\:' -no-emul-boot /var/jenkins_home/workspace/iso-builder/'
+        sh '''xorriso -as mkisofs -r -V 'Linkat_2204_LTS_Desktop_EFIBIOS' -o /opt/ubnt/ubuntu-modif.iso --grub2-mbr /opt/ubnt/boot_hybrid.img  -iso-level 3 -partition_offset 16 --mbr-force-bootable -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b /opt/ubnt/efi.img -appended_part_as_gpt -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 -c '/boot.catalog' -b 'iso/boot/grub/i386-pc/eltorito.img' -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info -eltorito-alt-boot -e '--interval:appended_partition_2:::' -no-emul-boot /var/jenkins_home/workspace/iso-builder/'''
       }
       post {
         success {          
