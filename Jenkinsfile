@@ -42,11 +42,10 @@ pipeline {
      stage('Extract EFI partition image from the original ISO.') {
 	  steps {
         sh '''
-        ISO_FILENAME = 'ubuntu-22.04.1-desktop-amd64'  
         SKIP=$(/sbin/fdisk -l "ubuntu-22.04.1-desktop-amd6.iso" | fgrep '.iso2 ' | awk '{print $2}')
         SIZE=$(/sbin/fdisk -l "ubuntu-22.04.1-desktop-amd6.iso" | fgrep '.iso2 ' | awk '{print $4}'
-        dd if="ubuntu-22.04.1-desktop-amd6.iso" bs=512 skip="$SKIP" count="$SIZE" of="$efi"
         '''
+          sh 'dd if="ubuntu-22.04.1-desktop-amd6.iso" bs=512 skip="$SKIP" count="$SIZE" of="$efi"'
 	  }    
     }
     stage('Configure') {
