@@ -55,11 +55,6 @@ pipeline {
         sh 'cp iso/casper/filesystem.squashfs .'
         sh 'sudo unsquashfs filesystem.squashfs'
       }
-      post {
-        success {          
-          archiveArtifacts artifacts: "${ISO_BASE}_unattend.iso", fingerprint: true
-        }
-      }
     }       
     stage('Build ISO') {
       steps {      
@@ -68,7 +63,7 @@ pipeline {
       }
       post {
         success {          
-          archiveArtifacts artifacts: "${ISO_BASE}_unattend.iso", fingerprint: true
+          archiveArtifacts artifacts: "${ISO_LINKAT}.iso", fingerprint: true
         }
       }
     }   
