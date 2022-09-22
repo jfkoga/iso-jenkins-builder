@@ -1,7 +1,9 @@
 pipeline {
   agent any
   environment {
-    ISO_FILENAME = 'ubuntu-22.04.1-desktop-amd64'  
+    ISO_FILENAME = 'ubuntu-22.04.1-desktop-amd64' 
+    SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
+    SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}') 
   }
   parameters {
     string(name: 'LOCALE', defaultValue: 'es_ES', description: 'Locale')
@@ -41,8 +43,6 @@ pipeline {
     }
     stage('Extract EFI partition image from the original ISO.') {
       steps {
-        SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
-        SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}')
         sh 'dd if="${ISO_FILENAME}.iso" bs=512 skip="$SKIP" count="$SIZE" of="${ISO_FILENAME}.efi"'
         }    
     }
