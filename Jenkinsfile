@@ -35,21 +35,20 @@ pipeline {
       }
     }
     stage('Extract MBR partition image from the original ISO.') {
-	  steps { 
-        sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
-	    }
+      steps { 
+          sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
+        }
 	  }    
     }
      stage('Extract EFI partition image from the original ISO.') {
-	  steps {
-        sh '''
-        SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
-        SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}')
-        '''     
-        sh 'dd if="$orig" bs=512 skip="$SKIP" count="$SIZE" of="${ISO_FILENAME}.efi"'
-	    }
+        steps {
+            sh '''
+            SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
+            SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}')
+            '''     
+            sh 'dd if="$orig" bs=512 skip="$SKIP" count="$SIZE" of="${ISO_FILENAME}.efi"'
+          }
 	  }    
-    }
     stage('Configure') {
       steps {
         sh 'echo en > ./iso/isolinux/lang'
@@ -99,3 +98,4 @@ pipeline {
       }
 	  }
 	}   
+
