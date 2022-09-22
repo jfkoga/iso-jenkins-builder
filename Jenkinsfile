@@ -51,6 +51,12 @@ pipeline {
         }    
     }
     stage('Squashfs') {
+      when {
+        expression {
+          return !(dirExists("squashfs-root"))
+        }
+        
+      }
       steps {      
         sh 'cp iso/casper/filesystem.squashfs .'
         sh 'sudo unsquashfs filesystem.squashfs'
