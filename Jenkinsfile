@@ -39,14 +39,12 @@ pipeline {
           sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
       }    
     }
-     stage('Extract EFI partition image from the original ISO.') {
-	  steps {
-        sh '''
-        SKIP=$(/sbin/fdisk -l "ubuntu-22.04.1-desktop-amd6.iso" | fgrep '.iso2 ' | awk '{print $2}')
-        SIZE=$(/sbin/fdisk -l "ubuntu-22.04.1-desktop-amd6.iso" | fgrep '.iso2 ' | awk '{print $4}'
-        '''
-          sh 'dd if="ubuntu-22.04.1-desktop-amd6.iso" bs=512 skip="$SKIP" count="$SIZE" of="$efi"'
-	  }    
+    stage('Extract EFI partition image from the original ISO.') {
+      steps {
+        SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
+        SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}'
+        sh 'dd if="${ISO_FILENAME}.iso" bs=512 skip="$SKIP" count="$SIZE" of="${ISO_FILENAME}.efi"'
+        }    
     }
     stage('Configure') {
       steps {
