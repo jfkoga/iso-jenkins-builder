@@ -1,7 +1,9 @@
 pipeline {
   agent any
   environment {
-    ISO_FILENAME = 'ubuntu-22.04.1-desktop-amd64'  
+    ISO_BASE = 'ubuntu-22.04.1-desktop-amd64'
+    ISO_LINKAT = 'linkat-22.04.1-desktop-amd64'
+    
   }
   parameters {
     string(name: 'LOCALE', defaultValue: 'es_ES', description: 'Locale')
@@ -21,30 +23,30 @@ pipeline {
     stage('Download ISO') {
       when {
         expression {
-          return !(fileExists("${ISO_FILENAME}.iso"))
+          return !(fileExists("${ISO_BASE}.iso"))
         }
         
       }
       steps {
-        sh "curl -O https://releases.ubuntu.com/22.04/${ISO_FILENAME}.iso"
+        sh "curl -O https://releases.ubuntu.com/22.04/${ISO_BASE}.iso"
       }
     }
     stage('Mount ISO') {
       steps {                  
-        sh '7z x ./${ISO_FILENAME}.iso -oiso'
+        sh '7z x ./${ISO_BASE}.iso -oiso'
       }
     }
     stage('Extract MBR partition image from the original ISO.') {
       steps {
-          sh 'dd if="${ISO_FILENAME}.iso" bs=1 count=446 of="${ISO_FILENAME}.mbr"'
+          sh 'dd if="${ISO_BASE}.iso" bs=1 count=446 of="${ISO_BASE}.mbr"'
       }    
     }
     stage('Extract EFI partition image from the original ISO.') {
       steps {
         sh '''
-        SKIP=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $2}')
-        SIZE=$(/sbin/fdisk -l "${ISO_FILENAME}.iso" | fgrep '.iso2 ' | awk '{print $4}')
-        dd if="${ISO_FILENAME}.iso" bs=512 skip="$SKIP" count="$SIZE" of="${ISO_FILENAME}.efi"
+        SKIP=$(/sbin/fdisk -l "${ISO_BASE}.iso" | fgrep '.iso2 ' | awk '{print $2}')
+        SIZE=$(/sbin/fdisk -l "${ISO_BASE}.iso" | fgrep '.iso2 ' | awk '{print $4}')
+        dd if="${ISO_BASE}.iso" bs=512 skip="$SKIP" count="$SIZE" of="${ISO_BASE}.efi"
         '''
         }    
     }
@@ -77,13 +79,13 @@ pipeline {
         '''
       }
     }
-    stage('Make ISO') {
+    stage('Build ISO') {
       steps {      
-        sh 'mkisofs -D -r -V "Unattended Ubuntu Server 16.04" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${ISO_FILENAME}_unattend.iso ./iso'
+        sh 'xorriso -as mkisofs -r -V 'Ubuntu 22.04 LTS MODIF (EFIBIOS)' -o /opt/ubnt/ubuntu-modif.iso --grub2-mbr /opt/ubnt/boot_hybrid.img  -iso-level 3 -partition_offset 16 --mbr-force-bootable -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b /opt/ubnt/efi.img -appended_part_as_gpt -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 -c '/boot.catalog' -b 'iso/boot/grub/i386-pc/eltorito.img' -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info -eltorito-alt-boot -e '--interval:appended_partition_2:::' -no-emul-boot /var/jenkins_home/workspace/iso-builder/'
       }
       post {
         success {          
-          archiveArtifacts artifacts: "${ISO_FILENAME}_unattend.iso", fingerprint: true
+          archiveArtifacts artifacts: "${ISO_BASE}_unattend.iso", fingerprint: true
         }
       }
     }   
