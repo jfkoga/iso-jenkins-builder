@@ -51,13 +51,13 @@ pipeline {
         sh 'dd if="${ISO_BASE}.iso" bs=512 skip=7129428 count=8496 of="${ISO_BASE}_efi.img"'
         }    
     }
-//    stage('Squashfs') {
-//      steps {      
-//        sh 'cp iso/casper/filesystem.squashfs .'
-//        sh 'sudo unsquashfs filesystem.squashfs'
-//      }
-//
-//    }       
+    stage('Squashfs') {
+      steps {      
+        sh 'cp iso/casper/filesystem.squashfs .'
+        sudo su - root -c 'sudo unsquashfs filesystem.squashfs'
+      }
+
+    }       
     stage('Build ISO') {
       steps {      
         //sh '''xorriso -as mkisofs -r -V 'Linkat 22.04 LTS Desktop' -o ${ISO_LINKAT}.iso --grub2-mbr ${ISO_BASE}_mbr.img  -iso-level 3 -partition_offset 16 --mbr-force-bootable -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b ${ISO_BASE}_efi.img -appended_part_as_gpt -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7   -c '/boot.catalog'  -b 'iso/boot/grub/i386-pc/eltorito.img'     -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info   -eltorito-alt-boot   -e '--interval:appended_partition_2:::'     -no-emul-boot /var/jenkins_home/workspace/iso-builder/'''
