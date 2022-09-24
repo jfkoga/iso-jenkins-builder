@@ -68,10 +68,10 @@ pipeline {
     }   
   }
 //  post {  
-//  always {
+//	  always {
 //	    dir('iso') {
 //        deleteDir()
 //      }
 //	  }
 //	}   
-//}
+}
