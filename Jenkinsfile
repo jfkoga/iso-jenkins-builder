@@ -70,11 +70,11 @@ pipeline {
       }
     }   
   }
-//  post {  
-//	  always {
-//	    dir('iso') {
-//        deleteDir()
-//      }
-//	  }
-//	}   
+  post {  
+	  always {
+	    dir('iso') {
+        deleteDir()
+      }
+	  }
+	}   
 }
