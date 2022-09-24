@@ -54,7 +54,7 @@ pipeline {
     stage('Squashfs') {
       steps {      
         sh 'cp iso/casper/filesystem.squashfs .'
-        sudo su - root -c 'sudo unsquashfs filesystem.squashfs'
+        sudo su - root -c 'unsquashfs filesystem.squashfs'
       }
 
     }       
