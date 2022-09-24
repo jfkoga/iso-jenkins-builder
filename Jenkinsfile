@@ -66,15 +66,12 @@ pipeline {
         }
       }
     }   
-  }
-  post {  
-	  always {
-	    dir('iso') {
-        deleteDir()
-      }
-      dir('initrd') {
-        deleteDir()
-      }
-	  }
-	}   
-}
+//  }
+//  post {  
+//  always {
+//	    dir('iso') {
+//        deleteDir()
+//      }
+//	  }
+//	}   
+//}
